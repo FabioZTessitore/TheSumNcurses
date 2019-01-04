@@ -4,8 +4,6 @@
 #include "quantity.h"
 #include "uiadapter.h"
 
-#include <ncurses.h>
-
 int main()
 {
   Quantity qty;
@@ -21,8 +19,6 @@ int main()
   printf("Quantity: %d\n", quantity_getValue(&qty));
 
   UIAdapter_makeAndRunUI(&qty);
-  refresh();
-  getch();
   UIAdapter_finalize();
 
   return 0;
