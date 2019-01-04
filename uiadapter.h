@@ -7,7 +7,7 @@
 
 void UIAdapter_init();
 void UIAdapter_finalize();
-void UIAdapter_createWin();
+void UIAdapter_createWin(Quantity * const qty);
 void UIAdapter_mainloop();
 void UIAdapter_makeAndRunUI(Quantity * const qty);
 
