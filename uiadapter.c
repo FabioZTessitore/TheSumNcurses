@@ -42,7 +42,7 @@ void UIAdapter_createWin(Quantity * const qty)
   quantityUI = quantityUI_createWin(qty);
 }
 
-void UIAdapter_mainloop()
+void UIAdapter_mainloop(Quantity * const qty)
 {
   int ROWS, COLS;
   getmaxyx(stdscr, ROWS, COLS);
@@ -55,14 +55,19 @@ void UIAdapter_mainloop()
       while (c != '\n' && c != KEY_F(2)) {
         if (c >= '0' && c <= '9') {
           quantityToAdd = quantityToAdd*10 + (c-'0');
-          mvprintw(ROWS-7, 30, "%d", quantityToAdd);
-          refresh();
+        } else if (c == 'x') {
+          quantityToAdd /= 10;
         }
+        mvprintw(ROWS-7, 30, "%d\n", quantityToAdd);
+        refresh();
         c = getch();
       }
-    move(ROWS-7, 30);
 
-    quantityToAdd = 0;
-    mvaddstr(ROWS-7, 30, "\n");
+      if (c == '\n') {
+        quantity_addValue(qty, quantityToAdd);
+      }
+      move(ROWS-7, 30);
+      quantityToAdd = 0;
+      mvaddstr(ROWS-7, 30, "\n");
   }
 }
