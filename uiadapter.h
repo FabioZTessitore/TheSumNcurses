@@ -4,11 +4,12 @@
 #define UIADAPTER_H
 
 #include "quantity.h"
+#include "quantity_ui.h"
 
+QuantityUI *UIAdapter_makeAndRunUI(Quantity * const qty);
 void UIAdapter_init();
-void UIAdapter_finalize();
-void UIAdapter_createWin(Quantity * const qty);
-void UIAdapter_mainloop();
-void UIAdapter_makeAndRunUI(Quantity * const qty);
+QuantityUI *UIAdapter_createWin(Quantity * const qty);
+void UIAdapter_mainloop(Quantity * const qty);
+void UIAdapter_finalize(QuantityUI *qtyUI);
 
 #endif

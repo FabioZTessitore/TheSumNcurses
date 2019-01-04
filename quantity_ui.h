@@ -9,13 +9,17 @@
 #include "observer.h"
 
 struct quantity_ui {
-  Observer *theObserver;
   WINDOW *theWindow;
+  Observer *theObserver;
 };
 
 typedef struct quantity_ui QuantityUI;
 
-QuantityUI quantityUI_createWin(Quantity * const qty);
+/* QuantityUI is an Observer and need a parent pointer,
+ * so quantityUI_createWin() must return that pointer
+ */
+QuantityUI *quantityUI_createWin(Quantity * const qty);
+
 void quantityUI_destroy(QuantityUI *qtyUI);
 
 void quantityUI_update(void *aQtyUI, void *data);

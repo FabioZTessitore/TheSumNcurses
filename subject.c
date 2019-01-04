@@ -5,8 +5,6 @@
 #include "subject.h"
 #include "observer.h"
 
-#include <ncurses.h>
-
 Subject *subject_make()
 {
   Subject *this = (Subject *)malloc(sizeof(Subject));
@@ -52,11 +50,6 @@ void subject_notify(const Subject * const theSubject, void *data)
   int i;
   for (i = 0; i < MAX_OBSERVERS; i++) {
     if (theSubject->observers[i] != NULL) {
-
-      if (theSubject == NULL) {
-        mvprintw(0, 0, "SUBJECT NOTIFY (%d): Subject is NULL\n", i);
-        printf("SUBJECT NOTIFY (%d): Subject is NULL\n", i);
-      }
       observer_update(theSubject->observers[i], data);
     }
   }

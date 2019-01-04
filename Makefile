@@ -4,10 +4,10 @@ LDLIBS=-lncurses
 
 main: main.o quantity.o quantity_ui.o uiadapter.o subject.o observer.o
 
-main.o: main.c quantity.h uiadapter.h
+main.o: main.c quantity.h quantity_ui.h uiadapter.h
 quantity.o: quantity.c quantity.h subject.h
-quantity_ui.o: quantity_ui.c quantity_ui.h quantity.h
-uiadapter.o: uiadapter.c uiadapter.h quantity.h quantity_ui.h observer.h
+quantity_ui.o: quantity_ui.c quantity_ui.h quantity.h quantity.h observer.h
+uiadapter.o: uiadapter.c uiadapter.h quantity.h quantity_ui.h subject.h
 subject.o: subject.c subject.h observer.h
 observer.o: observer.c observer.h
 

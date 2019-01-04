@@ -7,7 +7,6 @@
 
 struct quantity {
   int value;
-
   Subject *theSubject;
 };
 

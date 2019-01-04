@@ -6,18 +6,15 @@
 #include "quantity_ui.h"
 #include "subject.h"
 
-static QuantityUI quantityUI;
-
-void UIAdapter_makeAndRunUI(Quantity * const qty)
+QuantityUI *UIAdapter_makeAndRunUI(Quantity * const qty)
 {
+  QuantityUI *qtyUI;
+
   UIAdapter_init();
-  UIAdapter_createWin(qty);
-
-  if (qty->theSubject == NULL) {
-    mvprintw(0, 0, "UIADAPTER: MAKE AND RUN UI: Subject is NULL\n");
-  }
-
+  qtyUI = UIAdapter_createWin(qty);
   UIAdapter_mainloop(qty);
+
+  return qtyUI;
 }
 
 void UIAdapter_init()
@@ -29,16 +26,10 @@ void UIAdapter_init()
   keypad(stdscr, TRUE);
 }
 
-void UIAdapter_finalize()
+QuantityUI *UIAdapter_createWin(Quantity * const qty)
 {
-  quantityUI_destroy(&quantityUI);
-  delwin(quantityUI.theWindow);
+  QuantityUI *qtyUI;
 
-  endwin();
-}
-
-void UIAdapter_createWin(Quantity * const qty)
-{
   int ROWS, COLS;
   getmaxyx(stdscr, ROWS, COLS);
 
@@ -46,32 +37,20 @@ void UIAdapter_createWin(Quantity * const qty)
   mvaddstr(ROWS-7, 5, "Add a quantity (int): ");
   refresh();
 
-  quantityUI = quantityUI_createWin(qty);
-  (quantityUI.theObserver)->parent = &quantityUI;
-  subject_attach(qty->theSubject, quantityUI.theObserver);
+  qtyUI = quantityUI_createWin(qty);
+  subject_attach(qty->theSubject, qtyUI->theObserver);
 
-  if (quantityUI.theObserver == NULL){
-    mvprintw(20, 0, "createWin(): Observer NULL");
-  } else if ((quantityUI.theObserver)->parent == NULL){
-    mvprintw(20, 0, "createWin(): parent NULL");
-  } else if ((quantityUI.theObserver)->parent != &quantityUI) {
-    mvprintw(20, 0, "createWin(): parent errato");
-  }
-
-
+  return qtyUI;
 }
 
 void UIAdapter_mainloop(Quantity * const qty)
 {
-  if (qty->theSubject == NULL) {
-    mvprintw(0, 0, "UIADAPTER: MAINLOOP: Subject is NULL\n");
-  }
-
   int ROWS, COLS;
-  getmaxyx(stdscr, ROWS, COLS);
 
   int quantityToAdd = 0;
   int c = '0';
+
+  getmaxyx(stdscr, ROWS, COLS);
 
   while (c != KEY_F(2)) {
       c = '0';
@@ -93,4 +72,11 @@ void UIAdapter_mainloop(Quantity * const qty)
       quantityToAdd = 0;
       mvaddstr(ROWS-7, 30, "\n");
   }
+}
+
+void UIAdapter_finalize(QuantityUI *qtyUI)
+{
+  quantityUI_destroy(qtyUI);
+
+  endwin();
 }
