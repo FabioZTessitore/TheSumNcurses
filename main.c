@@ -2,6 +2,9 @@
 
 #include <stdio.h>
 #include "quantity.h"
+#include "uiadapter.h"
+
+#include <ncurses.h>
 
 int main()
 {
@@ -16,6 +19,11 @@ int main()
   quantity_addValue(&qty, 5);
   printf("Adding 5\n");
   printf("Quantity: %d\n", quantity_getValue(&qty));
+
+  UIAdapter_makeAndRunUI(&qty);
+  refresh();
+  getch();
+  UIAdapter_finalize();
 
   return 0;
 }
