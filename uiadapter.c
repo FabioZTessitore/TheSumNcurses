@@ -4,14 +4,20 @@
 #include "uiadapter.h"
 #include "quantity.h"
 #include "quantity_ui.h"
+#include "subject.h"
 
-static WINDOW *quantityUI;
+static QuantityUI quantityUI;
 
 void UIAdapter_makeAndRunUI(Quantity * const qty)
 {
   UIAdapter_init();
   UIAdapter_createWin(qty);
-  UIAdapter_mainloop();
+
+  if (qty->theSubject == NULL) {
+    mvprintw(0, 0, "UIADAPTER: MAKE AND RUN UI: Subject is NULL\n");
+  }
+
+  UIAdapter_mainloop(qty);
 }
 
 void UIAdapter_init()
@@ -25,7 +31,8 @@ void UIAdapter_init()
 
 void UIAdapter_finalize()
 {
-  delwin(quantityUI);
+  quantityUI_destroy(&quantityUI);
+  delwin(quantityUI.theWindow);
 
   endwin();
 }
@@ -40,10 +47,26 @@ void UIAdapter_createWin(Quantity * const qty)
   refresh();
 
   quantityUI = quantityUI_createWin(qty);
+  (quantityUI.theObserver)->parent = &quantityUI;
+  subject_attach(qty->theSubject, quantityUI.theObserver);
+
+  if (quantityUI.theObserver == NULL){
+    mvprintw(20, 0, "createWin(): Observer NULL");
+  } else if ((quantityUI.theObserver)->parent == NULL){
+    mvprintw(20, 0, "createWin(): parent NULL");
+  } else if ((quantityUI.theObserver)->parent != &quantityUI) {
+    mvprintw(20, 0, "createWin(): parent errato");
+  }
+
+
 }
 
 void UIAdapter_mainloop(Quantity * const qty)
 {
+  if (qty->theSubject == NULL) {
+    mvprintw(0, 0, "UIADAPTER: MAINLOOP: Subject is NULL\n");
+  }
+
   int ROWS, COLS;
   getmaxyx(stdscr, ROWS, COLS);
 
