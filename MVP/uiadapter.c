@@ -2,17 +2,24 @@
 
 #include <ncurses.h>
 #include "uiadapter.h"
-#include "quantity.h"
 #include "quantity_ui.h"
+#include "presenter.h"
 #include "subject.h"
+#include "ioadapter.h"
 
-QuantityUI *UIAdapter_makeAndRunUI(Quantity * const qty)
+QuantityUI *UIAdapter_makeAndRunUI(const int initialValue, IOAdapter *ioadapter)
 {
   QuantityUI *qtyUI;
+  Presenter p;
 
   UIAdapter_init();
-  qtyUI = UIAdapter_createWin(qty);
-  UIAdapter_mainloop(qty);
+  qtyUI = UIAdapter_createWin(initialValue);
+  p = presenter_make(qtyUI, initialValue);
+  subject_attach(p.qty.theSubject, ioadapter->theObserver);
+  UIAdapter_mainloop(&p);
+
+  presenter_destroy(&p);
+  UIAdapter_finalize(qtyUI);
 
   return qtyUI;
 }
@@ -26,7 +33,7 @@ void UIAdapter_init()
   keypad(stdscr, TRUE);
 }
 
-QuantityUI *UIAdapter_createWin(Quantity * const qty)
+QuantityUI *UIAdapter_createWin(const int initialValue)
 {
   QuantityUI *qtyUI;
 
@@ -37,13 +44,12 @@ QuantityUI *UIAdapter_createWin(Quantity * const qty)
   mvaddstr(ROWS-7, 5, "Add a quantity (int): ");
   refresh();
 
-  qtyUI = quantityUI_createWin(qty);
-  subject_attach(qty->theSubject, qtyUI->theObserver);
+  qtyUI = quantityUI_createWin(initialValue);
 
   return qtyUI;
 }
 
-void UIAdapter_mainloop(Quantity * const qty)
+void UIAdapter_mainloop(Presenter *p)
 {
   int ROWS, COLS;
 
@@ -66,7 +72,7 @@ void UIAdapter_mainloop(Quantity * const qty)
       }
 
       if (c == '\n') {
-        quantity_addValue(qty, quantityToAdd);
+        presenter_updateQuantity(p, quantityToAdd);
       }
       move(ROWS-7, 30);
       quantityToAdd = 0;
